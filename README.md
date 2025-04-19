@@ -4,6 +4,15 @@ A powerful Chrome extension that helps you solve LeetCode problems using AI mode
 
 ![LeetCode AI Assistant](assets/icon128.png)
 
+# DEMO
+
+<video width="640" height="360" controls>
+  <source src="assets/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+You can also download and watch the [demo video](assets/demo.mp4) to see the extension in action.
+
 ## Features
 
 - **Multiple AI Models**: Choose between OpenAI, Google Gemini, for different problem-solving approaches
