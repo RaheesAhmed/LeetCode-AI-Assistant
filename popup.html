@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LeetCode AI Assistant</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>LeetCode AI Assistant</h1>
+
+    <div class="section">
+      <h2>Problem Details</h2>
+      <div id="problem-details">
+        <p>No LeetCode problem detected. Please navigate to a LeetCode problem page.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>AI Settings</h2>
+      <div class="settings">
+        <div class="setting-item">
+          <label for="ai-provider">AI Provider:</label>
+          <select id="ai-provider">
+            <option value="openai">OpenAI</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label for="api-key">API Key:</label>
+          <input type="password" id="api-key" placeholder="Enter your API key">
+        </div>
+
+        <div class="setting-item">
+          <label for="assistance-type">Assistance Type:</label>
+          <select id="assistance-type">
+            <option value="hint">Hint</option>
+            <option value="approach">Approach</option>
+            <option value="solution">Full Solution</option>
+            <option value="optimize">Optimize My Code</option>
+            <option value="explain">Explain Problem</option>
+          </select>
+        </div>
+
+        <button id="save-settings">Save Settings</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>AI Assistant</h2>
+      <div id="loading-indicator" class="loading hidden">Loading...</div>
+      <div class="actions">
+        <button id="get-help">Get Help</button>
+        <button id="optimize-code">Optimize My Code</button>
+        <button id="debug-code">Debug My Code</button>
+        <button id="explain-error" class="hidden">Explain Error</button>
+      </div>
+
+      <div id="ai-response" class="response">
+        <p>AI response will appear here...</p>
+      </div>
+
+      <div id="model-info" class="model-info hidden"></div>
+      <button id="insert-code" class="hidden">Insert Code to Editor</button>
+    </div>
+
+    <div class="footer">
+      <p>Powered by OpenAI/Google Gemini</p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
