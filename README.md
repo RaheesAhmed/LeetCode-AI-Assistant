@@ -94,7 +94,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Developer
+
+**Rahees Ahmed**
+
+- GitHub: [RaheesAhmed](https://github.com/RaheesAhmed/LeetCode-AI-Assistant.git)
+- Portfolio: [raheesahmed.vercel.app](https://raheesahmed.vercel.app)
+- LinkedIn: [raheesahmed](https://www.linkedin.com/in/raheesahmed/)
 
 ## Disclaimer
 
