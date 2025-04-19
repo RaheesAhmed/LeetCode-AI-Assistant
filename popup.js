@@ -434,16 +434,29 @@ document.addEventListener("DOMContentLoaded", function () {
       title = tempDiv.textContent || tempDiv.innerText || title;
     }
 
+    // Format difficulty with appropriate styling
+    let difficultyHTML = "";
+    if (details.difficulty) {
+      const diffClass = details.difficulty.toLowerCase();
+      difficultyHTML = `<span class="difficulty ${diffClass}">${details.difficulty}</span>`;
+    }
+
+    // Truncate description to a reasonable length
+    const truncatedDescription = details.description
+      ? details.description.length > 120
+        ? details.description.substring(0, 120) + "..."
+        : details.description
+      : "No description available";
+
     problemDetailsDiv.innerHTML = `
-      <p><strong>Title:</strong> ${title}</p>
-      <p><strong>Difficulty:</strong> ${details.difficulty}</p>
-      <p><strong>Description:</strong> ${details.description.substring(
-        0,
-        100
-      )}...</p>
+      <p><strong>Problem:</strong> ${title}</p>
+      <p><strong>Difficulty:</strong> ${difficultyHTML}</p>
+      <p><strong>Description:</strong> ${truncatedDescription}</p>
       ${
         details.topics && details.topics.length > 0
-          ? `<p><strong>Topics:</strong> ${details.topics.join(", ")}</p>`
+          ? `<p><strong>Topics:</strong> ${details.topics
+              .map((topic) => `<span class="topic-tag">${topic}</span>`)
+              .join(" ")}</p>`
           : ""
       }
     `;
@@ -469,6 +482,53 @@ document.addEventListener("DOMContentLoaded", function () {
       // Use marked library to convert markdown to HTML
       const formattedContent = marked.parse(content);
       aiResponseDiv.innerHTML = formattedContent;
+
+      // Add copy buttons to all code blocks
+      const codeBlocks = aiResponseDiv.querySelectorAll("pre code");
+      codeBlocks.forEach((codeBlock, index) => {
+        const pre = codeBlock.parentNode;
+
+        // Create a container for the code block to position the copy button
+        const container = document.createElement("div");
+        container.className = "code-block-container";
+        pre.parentNode.insertBefore(container, pre);
+        container.appendChild(pre);
+
+        // Create copy button
+        const copyButton = document.createElement("button");
+        copyButton.className = "copy-code-button";
+        copyButton.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+        copyButton.title = "Copy code";
+        copyButton.dataset.index = index;
+
+        // Add copy button to the container
+        container.appendChild(copyButton);
+
+        // Add click event to copy button
+        copyButton.addEventListener("click", function () {
+          const codeText = codeBlock.textContent;
+          navigator.clipboard.writeText(codeText).then(
+            function () {
+              showNotification("Code copied to clipboard!", "success");
+
+              // Change to checkmark when copied
+              const originalContent = copyButton.innerHTML;
+              copyButton.innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+              copyButton.classList.add("copied");
+
+              setTimeout(() => {
+                copyButton.classList.remove("copied");
+                copyButton.innerHTML = originalContent;
+              }, 1500);
+            },
+            function () {
+              showNotification("Failed to copy code", "error");
+            }
+          );
+        });
+      });
     } catch (error) {
       console.error("Error parsing Markdown:", error);
       // Display raw content if parsing fails
