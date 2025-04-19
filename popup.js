@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const problemDetailsDiv = document.getElementById("problem-details");
   const modelInfoDiv = document.getElementById("model-info");
   const loadingIndicator = document.getElementById("loading-indicator");
+  const settingsToggleButton = document.getElementById("settings-toggle");
+  const settingsSection = document.getElementById("settings-section");
 
   // Current problem details
   let currentProblemDetails = null;
@@ -20,12 +22,20 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentTestCases = [];
   let currentSubmissionResults = null;
 
+  // Settings toggle
+  settingsToggleButton.addEventListener("click", function () {
+    settingsSection.classList.toggle("hidden");
+  });
+
   // Load saved settings
   chrome.storage.sync.get(
     ["aiProvider", "apiKey", "assistanceType"],
     function (result) {
       if (result.aiProvider) aiProviderSelect.value = result.aiProvider;
-      if (result.apiKey) apiKeyInput.value = result.apiKey;
+      if (result.apiKey) {
+        apiKeyInput.value = result.apiKey;
+        settingsToggleButton.classList.add("configured");
+      }
       if (result.assistanceType)
         assistanceTypeSelect.value = result.assistanceType;
     }
@@ -41,6 +51,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     chrome.storage.sync.set(settings, function () {
       showNotification("Settings saved!", "success");
+      // Hide settings section after saving
+      settingsSection.classList.add("hidden");
+
+      // Add configured class if API key is set
+      if (settings.apiKey) {
+        settingsToggleButton.classList.add("configured");
+      } else {
+        settingsToggleButton.classList.remove("configured");
+      }
     });
   });
 
@@ -404,8 +423,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Helper functions
   function displayProblemDetails(details) {
+    // Check if title is available and properly formatted
+    let title = details.title || "Unknown Problem";
+
+    // Clean up title if it contains HTML (like when scraping from LeetCode)
+    if (title.includes("<a") || title.includes("</a>")) {
+      // Extract text from HTML title
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = title;
+      title = tempDiv.textContent || tempDiv.innerText || title;
+    }
+
     problemDetailsDiv.innerHTML = `
-      <p><strong>Title:</strong> ${details.title}</p>
+      <p><strong>Title:</strong> ${title}</p>
       <p><strong>Difficulty:</strong> ${details.difficulty}</p>
       <p><strong>Description:</strong> ${details.description.substring(
         0,

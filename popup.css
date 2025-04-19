@@ -18,6 +18,10 @@ h1 {
   text-align: center;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 h2 {
@@ -146,6 +150,56 @@ button:disabled {
 
 .hidden {
   display: none;
+}
+
+#settings-section {
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out;
+}
+
+#settings-section.hidden {
+  display: none;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  transition: background-color 0.2s;
+  margin: 0;
+  position: relative;
+}
+
+.icon-button:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.icon-button img {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+}
+
+.icon-button.configured::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: #27ae60;
+  border-radius: 50%;
+  border: 1px solid white;
 }
 
 .footer {
