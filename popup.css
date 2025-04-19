@@ -110,6 +110,40 @@ button:disabled {
   font-size: 13px;
 }
 
+/* Styles for Markdown content */
+.response ul,
+.response ol {
+  padding-left: 20px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.response li {
+  margin-bottom: 5px;
+}
+
+.response strong {
+  font-weight: bold;
+}
+
+.response em {
+  font-style: italic;
+}
+
+.response h1,
+.response h2,
+.response h3,
+.response h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+.response h1 { font-size: 1.2em; }
+.response h2 { font-size: 1.1em; }
+.response h3 { font-size: 1.0em; }
+.response h4 { font-size: 0.9em; }
+
 .hidden {
   display: none;
 }
