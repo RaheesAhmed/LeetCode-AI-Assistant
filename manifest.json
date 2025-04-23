@@ -5,7 +5,8 @@
   "description": "AI-powered assistant to help solve LeetCode problems using OpenAI or Google Gemini",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "https://leetcode.com/*"
@@ -21,7 +22,9 @@
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/problems/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "css": []
     }
   ],
   "background": {
