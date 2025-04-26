@@ -8,7 +8,7 @@ const DEFAULT_CONFIG = {
 
   // OpenAI settings
   openai: {
-    model: "gpt-4o",
+    model: "o4-mini-2025-04-16",
     temperature: 1,
     maxTokens: 2000,
   },

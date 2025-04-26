@@ -48,9 +48,7 @@ function injectFloatingButton() {
   floatingButton.id = "leetcode-ai-assistant-button";
   floatingButton.innerHTML = `
     <div class="leetcode-ai-button-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c.83 0 1.5.67 1.5 1.5S12.83 8 12 8s-1.5-.67-1.5-1.5S11.17 5 12 5zm5 10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-10 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-      </svg>
+      <img src="${chrome.runtime.getURL('assets/icon128.png')}" alt="LeetCode AI Assistant" width="32" height="32">
     </div>
     <span class="leetcode-ai-tooltip">LeetCode AI Assistant</span>
   `;
@@ -65,41 +63,48 @@ function injectFloatingButton() {
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #0a84ff, #3c52cc);
+      background: white;
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       z-index: 9999;
       transition: all 0.3s ease;
-      border: 2px solid rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      overflow: hidden;
     }
-    
+
     #leetcode-ai-assistant-button:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(10, 132, 255, 0.4);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     }
-    
+
     #leetcode-ai-assistant-button:active {
       transform: scale(0.95);
     }
-    
+
     #leetcode-ai-assistant-button:hover .leetcode-ai-tooltip {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
       visibility: visible;
     }
-    
+
     .leetcode-ai-button-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 100%;
+      height: 100%;
     }
-    
+
+    .leetcode-ai-button-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .leetcode-ai-tooltip {
       position: absolute;
       top: -45px;
@@ -118,7 +123,7 @@ function injectFloatingButton() {
       pointer-events: none;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
     .leetcode-ai-tooltip:after {
       content: '';
       position: absolute;
@@ -131,7 +136,7 @@ function injectFloatingButton() {
       border-right: 6px solid transparent;
       border-top: 6px solid #333;
     }
-    
+
     @media (max-width: 768px) {
       #leetcode-ai-assistant-button {
         bottom: 15px;
@@ -139,7 +144,7 @@ function injectFloatingButton() {
         width: 50px;
         height: 50px;
       }
-      
+
       .leetcode-ai-button-icon {
         width: 28px;
         height: 28px;
@@ -547,82 +552,127 @@ function extractTestCases() {
   try {
     const testCases = [];
 
-    // Try to find test cases in the testcase tab (new UI?)
-    const testcaseTab = document.querySelector(
-      '[data-e2e-locator="console-tab-testcase"]'
-    );
+    // Try to find test cases in the testcase tab (new UI with flexlayout)
+    const testcaseTab = document.getElementById("testcase_tab");
     if (testcaseTab) {
-      const testcaseInputs = document.querySelectorAll(
-        '[data-e2e-locator="console-testcase-input"]'
-      );
-      if (testcaseInputs.length > 0) {
-        const testCase = {};
-        testcaseInputs.forEach((inputElement) => {
-          try {
-            // Find the label associated with the input
-            const container = inputElement.closest(
-              ".flex.h-full.w-full.flex-col.space-y-2"
-            );
-            const labelElement = container
-              ? container.querySelector(".text-xs.font-medium")
-              : null;
+      // Find the testcase content area
+      const testcaseContent = document.querySelector(".flexlayout__tabset_content");
 
-            if (labelElement) {
-              const key = labelElement.textContent.replace("=", "").trim();
-              testCase[key] = inputElement.textContent.trim();
-            } else {
-              console.warn(
-                "Could not find label for testcase input:",
+      // If we found the tab content area, look for the test case input
+      if (testcaseContent) {
+        const testcaseInput = testcaseContent.querySelector("textarea, [contenteditable='true']");
+        if (testcaseInput && testcaseInput.value) {
+          testCases.push({
+            id: "testcase_1",
+            input: testcaseInput.value.trim()
+          });
+        } else if (testcaseInput && testcaseInput.textContent) {
+          testCases.push({
+            id: "testcase_1",
+            input: testcaseInput.textContent.trim()
+          });
+        }
+      }
+
+      // If we couldn't find the test case in the content area, try other selectors
+      if (testCases.length === 0) {
+        // Try to find any textarea or editable div in the testcase area
+        const testcaseInputs = document.querySelectorAll("textarea, [contenteditable='true']");
+        for (const input of testcaseInputs) {
+          const inputValue = input.value || input.textContent;
+          if (inputValue && inputValue.trim()) {
+            testCases.push({
+              id: `testcase_${testCases.length + 1}`,
+              input: inputValue.trim()
+            });
+          }
+        }
+      }
+    }
+
+    // Try to find test cases in the testcase tab (alternative UI)
+    if (testCases.length === 0) {
+      const testcaseTab = document.querySelector(
+        '[data-e2e-locator="console-tab-testcase"]'
+      );
+      if (testcaseTab) {
+        const testcaseInputs = document.querySelectorAll(
+          '[data-e2e-locator="console-testcase-input"]'
+        );
+        if (testcaseInputs.length > 0) {
+          const testCase = {};
+          testcaseInputs.forEach((inputElement) => {
+            try {
+              // Find the label associated with the input
+              const container = inputElement.closest(
+                ".flex.h-full.w-full.flex-col.space-y-2"
+              );
+              const labelElement = container
+                ? container.querySelector(".text-xs.font-medium")
+                : null;
+
+              if (labelElement) {
+                const key = labelElement.textContent.replace("=", "").trim();
+                testCase[key] = inputElement.textContent.trim();
+              } else {
+                console.warn(
+                  "Could not find label for testcase input:",
+                  inputElement
+                );
+              }
+            } catch (labelError) {
+              console.error(
+                "Error processing single testcase input:",
+                labelError,
                 inputElement
               );
             }
-          } catch (labelError) {
-            console.error(
-              "Error processing single testcase input:",
-              labelError,
-              inputElement
-            );
-          }
-        });
+          });
 
-        if (Object.keys(testCase).length > 0) {
-          testCases.push(testCase);
+          if (Object.keys(testCase).length > 0) {
+            testCases.push(testCase);
+          }
         }
       }
     }
 
     // Try to find test cases in the description's examples (older UI / problem view)
-    const exampleContainer =
-      document.querySelector('[data-cy="question-content"]') ||
-      document.querySelector(".elfjS");
-    if (exampleContainer) {
-      const examples = exampleContainer.querySelectorAll("pre"); // Examples are often in <pre> tags
-      examples.forEach((exampleBlock, index) => {
-        try {
-          const text = exampleBlock.textContent.trim();
-          const inputMatch = text.match(/Input:\s*([\s\S]*?)(?:Output:|$)/i);
-          const outputMatch = text.match(
-            /Output:\s*([\s\S]*?)(?:Explanation:|$)/i
-          );
+    if (testCases.length === 0) {
+      const exampleContainer =
+        document.querySelector('[data-cy="question-content"]') ||
+        document.querySelector(".elfjS");
+      if (exampleContainer) {
+        const examples = exampleContainer.querySelectorAll("pre"); // Examples are often in <pre> tags
+        examples.forEach((exampleBlock, index) => {
+          try {
+            const text = exampleBlock.textContent.trim();
+            const inputMatch = text.match(/Input:\s*([\s\S]*?)(?:Output:|$)/i);
+            const outputMatch = text.match(
+              /Output:\s*([\s\S]*?)(?:Explanation:|$)/i
+            );
 
-          if (inputMatch && inputMatch[1] && outputMatch && outputMatch[1]) {
-            const inputText = inputMatch[1].trim();
-            const outputText = outputMatch[1].trim();
-            testCases.push({
-              id: `example_${index + 1}`,
-              input: inputText,
-              output: outputText,
-            });
+            if (inputMatch && inputMatch[1] && outputMatch && outputMatch[1]) {
+              const inputText = inputMatch[1].trim();
+              const outputText = outputMatch[1].trim();
+              testCases.push({
+                id: `example_${index + 1}`,
+                input: inputText,
+                output: outputText,
+              });
+            }
+          } catch (exampleError) {
+            console.error(
+              `Error parsing example ${index + 1}:`,
+              exampleError,
+              exampleBlock
+            );
           }
-        } catch (exampleError) {
-          console.error(
-            `Error parsing example ${index + 1}:`,
-            exampleError,
-            exampleBlock
-          );
-        }
-      });
+        });
+      }
     }
+
+    // Log the extracted test cases for debugging
+    console.log("LeetCode AI Assistant - Extracted test cases:", testCases);
 
     return testCases;
   } catch (error) {
@@ -630,6 +680,7 @@ function extractTestCases() {
     console.error(
       `Error extracting test cases (${error.name}): ${error.message}`
     );
+    console.error("Error stack:", error.stack);
     return []; // Return empty array on failure
   }
 }
@@ -639,7 +690,91 @@ function extractTestCases() {
  */
 function extractSubmissionResults() {
   try {
-    // Try to find submission results
+    // Try to find submission results in the new UI with flexlayout
+    const resultTab = document.getElementById("result_tab");
+    if (resultTab) {
+      // Check if the result tab is selected
+      const isResultTabSelected = document.querySelector(".flexlayout__tab_button--selected #result_tab");
+
+      // If the result tab is not selected, we need to click it to see the results
+      if (!isResultTabSelected && resultTab.closest(".flexlayout__tab_button")) {
+        resultTab.closest(".flexlayout__tab_button").click();
+      }
+
+      // Find the result content area
+      const resultContent = document.querySelector(".flexlayout__tabset_content");
+      if (resultContent) {
+        const resultText = resultContent.textContent.trim();
+
+        // Check for success or error messages
+        const isSuccess =
+          resultText.includes("Accepted") ||
+          resultText.includes("Success") ||
+          resultText.includes("Output:") ||
+          resultText.includes("Expected:") && resultText.includes("Output:") && !resultText.includes("Wrong Answer");
+
+        const isError =
+          resultText.includes("Error") ||
+          resultText.includes("Wrong Answer") ||
+          resultText.includes("Runtime Error") ||
+          resultText.includes("Time Limit Exceeded");
+
+        // Try to extract runtime and memory information
+        const runtimeMatch = resultText.match(/Runtime:\s*([\d.]+\s*[a-z]+)/i);
+        const memoryMatch = resultText.match(/Memory:\s*([\d.]+\s*[a-z]+)/i);
+
+        const runtime = runtimeMatch ? runtimeMatch[1] : "";
+        const memory = memoryMatch ? memoryMatch[1] : "";
+
+        // Try to extract error details
+        let errorMessage = "";
+        if (isError) {
+          // Look for specific error patterns
+          const errorPatterns = [
+            /Wrong Answer([\s\S]*?)(?=Runtime:|$)/i,
+            /Runtime Error([\s\S]*?)(?=Runtime:|$)/i,
+            /Time Limit Exceeded([\s\S]*?)(?=Runtime:|$)/i
+          ];
+
+          for (const pattern of errorPatterns) {
+            const match = resultText.match(pattern);
+            if (match && match[1]) {
+              errorMessage = match[1].trim();
+              break;
+            }
+          }
+
+          // If no specific pattern matched, use a general approach
+          if (!errorMessage) {
+            // Try to extract the part between the error type and runtime info
+            const errorStart = Math.max(
+              resultText.indexOf("Wrong Answer"),
+              resultText.indexOf("Runtime Error"),
+              resultText.indexOf("Time Limit Exceeded")
+            );
+
+            if (errorStart !== -1) {
+              const runtimeStart = resultText.indexOf("Runtime:");
+              if (runtimeStart !== -1 && runtimeStart > errorStart) {
+                errorMessage = resultText.substring(errorStart, runtimeStart).trim();
+              } else {
+                errorMessage = resultText.substring(errorStart).trim();
+              }
+            }
+          }
+        }
+
+        return {
+          status: isSuccess ? "success" : isError ? "error" : "unknown",
+          message: resultText,
+          errorDetails: errorMessage,
+          runtime,
+          memory,
+        };
+      }
+    }
+
+    // Try the alternative UI if the new UI didn't work
     const resultElement = document.querySelector(
       '[data-e2e-locator="console-result"]'
     );
@@ -674,9 +809,12 @@ function extractSubmissionResults() {
       };
     }
 
+    // Log that we couldn't find any results
+    console.log("LeetCode AI Assistant - No submission results found");
     return null;
   } catch (error) {
     console.error("Error extracting submission results:", error);
+    console.error("Error stack:", error.stack);
     return null;
   }
 }

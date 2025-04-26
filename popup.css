@@ -38,14 +38,9 @@ h1 {
   gap: 10px;
 }
 
-h1::before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: var(--leetcode-primary);
+.app-icon {
+  margin-right: 8px;
   border-radius: 4px;
-  margin-right: 2px;
 }
 
 h2 {
@@ -502,39 +497,5 @@ button:disabled {
   border: 1px solid #e1ecf4;
 }
 
-/* LeetCode logo */
-.leetcode-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 6px;
-}
-
-.leetcode-logo-square {
-  width: 20px;
-  height: 20px;
-  background-color: var(--leetcode-primary);
-  border-radius: 3px;
-  position: relative;
-}
-
-.leetcode-logo-square::before,
-.leetcode-logo-square::after {
-  content: '';
-  position: absolute;
-  background-color: white;
-}
-
-.leetcode-logo-square::before {
-  width: 10px;
-  height: 3px;
-  top: 8px;
-  left: 5px;
-}
-
-.leetcode-logo-square::after {
-  width: 3px;
-  height: 8px;
-  top: 6px;
-  left: 8px;
-}
+/* Custom App Icon */
+/* The app-icon class is defined above near the h1 styles */
